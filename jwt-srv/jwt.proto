@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package pp.jwt;
+
+option go_package = "./;proto";
+
+/**
+ *        ____  ____   ____
+ *   __ _|  _ \|  _ \ / ___|
+ *  / _` | |_) | |_) | |
+ * | (_| |  _ <|  __/| |___
+ *  \__, |_| \_\_|    \____|
+ *  |___/
+ *
+ **/
+
+// protoc -I. -I=%GOPATH%\\src\\github.com\\grpc-ecosystem\\grpc-gateway\\third_party\\googleapis --go_out=plugins=grpc:./ jwt.proto
+service JwtService{
+    rpc GenerateJWT(TokenBody)  returns (Token);
+    rpc DecodeJWT(Token) returns (DecodeResp);
+}
+
+
+message TokenBody {
+    string iss = 1;
+    string sub = 2;
+    int64 role = 3;
+    string web3_address = 4;
+    string status = 5;
+    string language = 6;
+}
+
+message Token {
+    string token = 1;
+}
+
+message DecodeResp {
+    bool valid = 1;
+    string token = 2;
+    TokenBody body = 3;
+}

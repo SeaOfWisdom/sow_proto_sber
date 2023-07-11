@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package pp.contractor;
+
+option go_package = "./;proto";
+
+
+/**
+ *        ____  ____   ____
+ *   __ _|  _ \|  _ \ / ___|
+ *  / _` | |_) | |_) | |
+ * | (_| |  _ <|  __/| |___
+ *  \__, |_| \_\_|    \____|
+ *  |___/
+ *
+ **/
+
+service ContractorService {
+  rpc PublishWork (PublishWorkRequest) returns(TxHashResponse);
+
+  rpc PurchaseWork (PurchaseWorkRequest) returns(PurchaseWorkResponse);
+
+  // rpc FollowTxStatus(TxStatusRequest) returns (stream TxStatusResponce) {}
+
+  rpc GetStatus(TxStatusRequest) returns (TxStatusResponce);
+}
+
+
+message PublishWorkRequest {
+  string name = 1;
+  string author = 2;
+  string uri = 3;
+  string price = 4;
+}
+
+message PurchaseWorkRequest {
+  string work_id = 1;
+  string reader_address = 2;
+  string price = 3;
+  string author_address = 4;
+}
+
+message PurchaseWorkResponse {
+  TxHashResponse readerTxStatus = 1;
+  TxHashResponse authorTxStatus = 2;
+}
+
+message TxHashResponse {
+  string tx_hash = 1;
+  string error_msg = 2;
+}
+
+message TxStatusRequest {
+  string tx_hash = 1;
+  string chain_id = 2;
+}
+
+message TxStatusResponce {
+  bool status = 1; // 0 - Failed, 1 - Success
+  string revert_reason = 2;
+}
