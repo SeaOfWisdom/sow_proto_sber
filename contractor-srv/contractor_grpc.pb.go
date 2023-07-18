@@ -24,7 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type ContractorServiceClient interface {
 	PublishWork(ctx context.Context, in *PublishWorkRequest, opts ...grpc.CallOption) (*TxHashResponse, error)
 	PurchaseWork(ctx context.Context, in *PurchaseWorkRequest, opts ...grpc.CallOption) (*PurchaseWorkResponse, error)
-	GetStatus(ctx context.Context, in *TxStatusRequest, opts ...grpc.CallOption) (*TxStatusResponce, error)
+	GetStatus(ctx context.Context, in *TxStatusRequest, opts ...grpc.CallOption) (*TxStatusResponse, error)
+	Faucet(ctx context.Context, in *FaucetRequest, opts ...grpc.CallOption) (*TxHashResponse, error)
 }
 
 type contractorServiceClient struct {
@@ -53,9 +54,18 @@ func (c *contractorServiceClient) PurchaseWork(ctx context.Context, in *Purchase
 	return out, nil
 }
 
-func (c *contractorServiceClient) GetStatus(ctx context.Context, in *TxStatusRequest, opts ...grpc.CallOption) (*TxStatusResponce, error) {
-	out := new(TxStatusResponce)
+func (c *contractorServiceClient) GetStatus(ctx context.Context, in *TxStatusRequest, opts ...grpc.CallOption) (*TxStatusResponse, error) {
+	out := new(TxStatusResponse)
 	err := c.cc.Invoke(ctx, "/pp.contractor.ContractorService/GetStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contractorServiceClient) Faucet(ctx context.Context, in *FaucetRequest, opts ...grpc.CallOption) (*TxHashResponse, error) {
+	out := new(TxHashResponse)
+	err := c.cc.Invoke(ctx, "/pp.contractor.ContractorService/Faucet", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +78,8 @@ func (c *contractorServiceClient) GetStatus(ctx context.Context, in *TxStatusReq
 type ContractorServiceServer interface {
 	PublishWork(context.Context, *PublishWorkRequest) (*TxHashResponse, error)
 	PurchaseWork(context.Context, *PurchaseWorkRequest) (*PurchaseWorkResponse, error)
-	GetStatus(context.Context, *TxStatusRequest) (*TxStatusResponce, error)
+	GetStatus(context.Context, *TxStatusRequest) (*TxStatusResponse, error)
+	Faucet(context.Context, *FaucetRequest) (*TxHashResponse, error)
 	mustEmbedUnimplementedContractorServiceServer()
 }
 
@@ -82,8 +93,11 @@ func (UnimplementedContractorServiceServer) PublishWork(context.Context, *Publis
 func (UnimplementedContractorServiceServer) PurchaseWork(context.Context, *PurchaseWorkRequest) (*PurchaseWorkResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PurchaseWork not implemented")
 }
-func (UnimplementedContractorServiceServer) GetStatus(context.Context, *TxStatusRequest) (*TxStatusResponce, error) {
+func (UnimplementedContractorServiceServer) GetStatus(context.Context, *TxStatusRequest) (*TxStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStatus not implemented")
+}
+func (UnimplementedContractorServiceServer) Faucet(context.Context, *FaucetRequest) (*TxHashResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Faucet not implemented")
 }
 func (UnimplementedContractorServiceServer) mustEmbedUnimplementedContractorServiceServer() {}
 
@@ -152,6 +166,24 @@ func _ContractorService_GetStatus_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ContractorService_Faucet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FaucetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContractorServiceServer).Faucet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pp.contractor.ContractorService/Faucet",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContractorServiceServer).Faucet(ctx, req.(*FaucetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ContractorService_ServiceDesc is the grpc.ServiceDesc for ContractorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +202,10 @@ var ContractorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetStatus",
 			Handler:    _ContractorService_GetStatus_Handler,
+		},
+		{
+			MethodName: "Faucet",
+			Handler:    _ContractorService_Faucet_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

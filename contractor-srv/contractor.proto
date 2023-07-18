@@ -22,7 +22,9 @@ service ContractorService {
 
   // rpc FollowTxStatus(TxStatusRequest) returns (stream TxStatusResponce) {}
 
-  rpc GetStatus(TxStatusRequest) returns (TxStatusResponce);
+  rpc GetStatus(TxStatusRequest) returns (TxStatusResponse);
+
+  rpc Faucet(FaucetRequest) returns (TxHashResponse);
 }
 
 
@@ -55,7 +57,12 @@ message TxStatusRequest {
   string chain_id = 2;
 }
 
-message TxStatusResponce {
+message TxStatusResponse {
   bool status = 1; // 0 - Failed, 1 - Success
   string revert_reason = 2;
+}
+
+message FaucetRequest {
+  string address = 1; // 0 - Failed, 1 - Success
+  string amount = 2;
 }

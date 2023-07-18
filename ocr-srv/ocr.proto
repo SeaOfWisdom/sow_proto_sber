@@ -3,13 +3,38 @@ syntax = "proto3";
 package ocr;
 option go_package = "./proto";
 
+import "google/protobuf/timestamp.proto";
+
 service OCR {
   rpc ExtractText (ExtractTextRequest) returns (ExtractTextResponse) {}
+  rpc ExtractValidatorText(ExtractValidatorRequest) returns (ExtractValidatorResponse) {}
 }
 
 message ExtractTextRequest {
   bytes image = 1;
   bool isPaper = 2;
+}
+
+message ExtractValidatorRequest {
+  bytes forward_image = 1;
+  bytes backward_image = 2;
+}
+
+message ExtractValidatorResponse {
+    ValidatorForwardInfo forward_info = 1;
+    ValidatorBackwardInfo backward_info = 2;
+}
+
+message ValidatorBackwardInfo {
+  string number = 1;
+  string serial_number = 2;
+  google.protobuf.Timestamp date = 3;
+}
+
+message ValidatorForwardInfo {
+  uint64 number = 1;
+  google.protobuf.Timestamp date = 2;
+  string sciences = 3;
 }
 
 message ExtractTextResponse {
