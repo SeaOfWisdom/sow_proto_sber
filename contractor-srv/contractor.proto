@@ -20,19 +20,28 @@ service ContractorService {
 
   rpc PurchaseWork (PurchaseWorkRequest) returns(PurchaseWorkResponse);
 
+  rpc MakeAuthor (AccountRequest) returns(TxHashResponse);
+
+  rpc MakeAdmin (AccountRequest) returns(TxHashResponse);
+
+  rpc MakeReviewer (AccountRequest) returns(TxHashResponse);
+
   // rpc FollowTxStatus(TxStatusRequest) returns (stream TxStatusResponce) {}
 
   rpc GetStatus(TxStatusRequest) returns (TxStatusResponse);
 
   rpc Faucet(FaucetRequest) returns (TxHashResponse);
+
+  rpc AddParticipant(AccountRequest) returns (TxHashResponse);
 }
 
 
 message PublishWorkRequest {
   string name = 1;
-  string author = 2;
-  string uri = 3;
-  string price = 4;
+  string uri = 2;
+  string work_id = 3;
+  repeated string authors = 4;
+  string price = 5;
 }
 
 message PurchaseWorkRequest {
@@ -43,8 +52,8 @@ message PurchaseWorkRequest {
 }
 
 message PurchaseWorkResponse {
-  TxHashResponse readerTxStatus = 1;
-  TxHashResponse authorTxStatus = 2;
+  TxHashResponse reader_tx_status = 1;
+  TxHashResponse author_tx_status = 2;
 }
 
 message TxHashResponse {
@@ -65,4 +74,8 @@ message TxStatusResponse {
 message FaucetRequest {
   string address = 1; // 0 - Failed, 1 - Success
   string amount = 2;
+}
+
+message AccountRequest {
+  string address = 1;
 }
