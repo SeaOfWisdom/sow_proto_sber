@@ -26,13 +26,17 @@ service ContractorService {
 
   rpc MakeReviewer (AccountRequest) returns(TxHashResponse);
 
+  rpc Faucet(FaucetRequest) returns (TxHashResponse);
+
+  rpc AddParticipant(AccountRequest) returns (TxHashResponse);
+
   // rpc FollowTxStatus(TxStatusRequest) returns (stream TxStatusResponce) {}
 
   rpc GetStatus(TxStatusRequest) returns (TxStatusResponse);
 
-  rpc Faucet(FaucetRequest) returns (TxHashResponse);
+  rpc GetPaperById(PaperByIdRequest) returns (PaperByIdResponse);
 
-  rpc AddParticipant(AccountRequest) returns (TxHashResponse);
+  rpc GetParticipantRole(AccountRequest) returns (RoleResponse);
 }
 
 
@@ -78,4 +82,16 @@ message FaucetRequest {
 
 message AccountRequest {
   string address = 1;
+}
+
+message PaperByIdRequest {
+  string id = 1;
+}
+
+message PaperByIdResponse {
+  string address = 1;
+}
+
+message RoleResponse {
+  uint64 role =1;
 }
